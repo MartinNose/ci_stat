@@ -99,7 +99,7 @@ class Run:
             except:
                 print(self.job_name, self.job_id) 
 
-        self.fail_info =  list(filter(lambda x: len(x) >= 2, map(lambda x: x.split("\n\n")[:2], raw)))
+        self.fail_info = list(filter(lambda x: len(x) >= 2, map(lambda x: x.split("\n\n")[:2], raw)))
         # = list(map(lambda x: x.split("FAIL: ")[1], filter(lambda x: "FAIL: " in x, raw)))
         return self.fail_info
 
@@ -504,7 +504,6 @@ def get_runs_raw(begin_time, end_time, job_name):
     if len(job_name) != 0:
         for job in job_name:
             query = query + " and job = '" + job + "'"
-    print(query)
     query
     cursor.execute(query)
     runs_raw = cursor.fetchall()
