@@ -26,9 +26,9 @@ Environment variable:
       "database": "sync_ci_data",
       "log_dir": "",
       "webhook": "https://open.feishu.cn/open-apis/bot/v2/hook/*****",
-      "app_id": "********", # feishu 
+      "app_id": "********",
       "app_secret": "*********",
-      "gh_token": "************" #
+      "gh_token": "************"
   }
   ```
 
@@ -63,47 +63,56 @@ stat.pr_list(res.pr_map) 		 # List all the pull requests triggering ci jobs
 
 ### Feishu Bot
 
+`ci_stat.feishu_bot` provides following APIs:
 
+- `res_to_card` to convert `res` to a feishu message card.
+- `post_card` to send a feishu message card to some group chat.
+
+Example usage can be found at `example_bot.py`.
 
 ### Issue Report
 
+`ci_stat.bug_report` provides an API to collect failed runs of job `tide-unit-test-nightly`. `bug_report` first gets all existing issue in repo `PingCAP/TiDB` and failed cases during previous day, then it create new issues for the unreported fail cases.
 
-
-
-
-
-
-## API
+## API of ci_stat
 
 ### `get_result(begin, end, job_name)`
 
+[WIP]
+
 ### `job_list(job_map)`
+
+[WIP]
 
 ### `pr_list(pr_map)`
 
-
+[WIP]
 
 ## Classes
 
+### Result
+
+[WIP]
+
 ### Run
 
-
+[WIP]
 
 ### Commit
 
-
+[WIP]
 
 ### PR
 
-
+[WIP]
 
 ### Job
 
-
+[WIP]
 
 ### Fail_Info
 
-
+[WIP]
 
 
 
