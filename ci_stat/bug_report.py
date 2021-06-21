@@ -11,20 +11,11 @@ import os
 from pprint import pprint
 import subprocess
 
-
-
-def daily_task():
-    end_time = datetime.today()
-    begin_time = end_time - timedelta(days=1) 
-    res = get_result(begin_time, end_time, ["tidb-unit-test-nightly"])
-
-    failed_runs = filter(lambda x: x.case_mark, res.special_list)
-
-
-def daily_task():
+def bug_report(begin, end, jobs):
     bug_map = {}
+
+    # Getting the bugs that already addressed in issues
     ghis = requests.get("https://api.github.com/repos/pingcap/tidb/issues", params={'creator':'zhouqiang-cl'}, headers={'Authorization': 'token ' + env["gh_token"]}).json()
-    # ghis = requests.get("https://api.github.com/repos/martinnose/ci_stat/issues", params={'creator':'tidb-ci-bot'}, headers={'Authorization': 'token ' + env["gh_token"]}).json()
     ghis = ghis + requests.get("https://api.github.com/repos/pingcap/tidb/issues", params={'creator':'tidb-ci-bot'}, headers={'Authorization': 'token ' + env["gh_token"]}).json()
 
     for i in filter(lambda x: "`" in x["title"] and "```" in x["body"], ghis):
@@ -33,9 +24,7 @@ def daily_task():
             title = title.split(" ")[1]
         bug_map[title] = i["body"].split("```")[1]
 
-    end_time = datetime.today()
-    begin_time = end_time - timedelta(days=7) 
-    res = get_result(begin_time, end_time, ["tidb-unit-test-nightly"])
+    res = get_result(begin, end, jobs)
 
     failed_runs = filter(lambda x: x.case_mark, res.special_list)
     print(len(list(failed_runs)))
@@ -50,9 +39,9 @@ def daily_task():
                     cmd = 'cat /mnt/ci.pingcap.net/jenkins_home/jobs/'+ run.job_name + '/builds/'+ str(run.job_id) + '/log ' + '| grep "git checkout" | tail -n1'
                     ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
                     run.commit = ps.communicate()[0].decode("utf-8").split(" ")[-1]
-                report(title, log, "master", run.commit, run.link)
+                send_issue(title, log, "master", run.commit, run.link)
 
-def report(title, log, branch, commit, link):
+def send_issue(title, log, branch, commit, link):
     token = env["gh_token"]
 
     body = '## Bug Report\r\n```\r\n' \
@@ -73,10 +62,10 @@ def report(title, log, branch, commit, link):
             repo.get_label("type/bug")
         ]
     )
-    pprint(issue)
+    print(issue)
 
 def main():
-    schedule.every().day.at("00:00").do(daily_task)
+    schedule.every().day.at("00:00").do(lambda: bug_report(datetime.today() - timedelta(days=1), datetime.today(),  ["tidb-unit-test-nightly"]))
 
     try:
         while True:
@@ -86,5 +75,5 @@ def main():
         pass
 
 if __name__ == "__main__":
-    # daily_task()
+    # bug_report(datetime.today() - timedelta(days=1), datetime.today(),  ["tidb-unit-test-nightly"])
     main()

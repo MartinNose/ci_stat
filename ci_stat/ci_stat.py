@@ -8,7 +8,9 @@ from string import printable
 from mysql.connector import connect
 from pathlib import Path
 from functools import reduce
-from bcolor import bcolor, bcolors, WHITE, CYAN, BOLD
+from ci_stat.misc import bcolor, bcolors, WHITE, CYAN, BOLD
+from ci_stat.misc import RedirectStdStreams
+from ci_stat.feishu_bot import res_to_card
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
@@ -282,7 +284,6 @@ class Job:
         self.branch = job.branch
         self.prs = {}
 
-        # TODO refractor after
         self.local_prs = {}
 
         self.fail_cnt = 0
@@ -368,21 +369,6 @@ class Fail_Info:
             )
         print()
 
-class RedirectStdStreams(object):
-    def __init__(self, stdout=None, stderr=None):
-        self._stdout = stdout or sys.stdout
-        self._stderr = stderr or sys.stderr
-
-    def __enter__(self):
-        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush(); self.old_stderr.flush()
-        sys.stdout, sys.stderr = self._stdout, self._stderr
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush(); self._stderr.flush()
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
-
 class Result:
     def __init__(self, runs_raw, begin_time,end_time):
         pr_map = {}
@@ -436,11 +422,14 @@ class Result:
         self.commit_hash_map = commit_hash_map
         self.job_map = job_map
         self.fail_info_map = fail_info_map
-        self.run_list = run_list
-        self.special_list = special_list
-        self.miss_cnt = miss_cnt
+
         self.begin_time = begin_time
         self.end_time = end_time
+
+        self.run_list = run_list
+        self.special_list = special_list
+
+        self.miss_cnt = miss_cnt
         self.success_cnt = ilen(filter(lambda x: x.status == "SUCCESS", run_list))
         self.fail_cnt = ilen(filter(lambda x: x.status == "FAILURE", run_list))
         self.abort_cnt = ilen(filter(lambda x: x.status == "ABORTED", run_list))
@@ -456,7 +445,9 @@ def sec_to_hours(seconds):
 def ilen(iterable):
     return reduce(lambda sum, element: sum + 1, iterable, 0)
 
-def summary(begin_time, end_time, res):
+def summary(res):
+    begin_time = res.begin_time
+    end_time = res.end_time
     pr_map = res.pr_map
     commit_hash_map = res.commit_hash_map
     job_map = res.job_map
@@ -490,10 +481,6 @@ def summary(begin_time, end_time, res):
         print(bcolors.OKCYAN + "abort_rate: " + bcolors.ENDC + '{:5.1%}'.format(abort_cnt / total_cnt), end="  ")
         print()
         print(bcolors.OKCYAN + "fail_info not found: " + bcolors.ENDC + str(miss_cnt), end="  ")   
-
-    # TODO 
-    # Top PR
-    # TOP JOB     
     print()
 
 def get_runs_raw(begin_time, end_time, job_name):
@@ -540,19 +527,13 @@ if __name__ == "__main__":
     end_time = datetime.today()
     begin_time = end_time - timedelta(hours=6) 
     res = get_result(begin_time, end_time)
-    pr_map = res.pr_map
-    commit_hash_map = res.commit_hash_map
-    job_map = res.job_map
-    fail_info_map = res.fail_info_map
-    run_list = res.run_list
-    miss_cnt = res.miss_cnt
+    summary(res)
 
     # for _, fail in sorted(fail_info_map.items(), key=lambda x:len(x[1].run_list), reverse=True):
     #     fail.log()
 
-    print(send(res))
+    # print(res_to_card(res))
 
-    summary(begin_time, end_time, pr_map, commit_hash_map, job_map, run_list, miss_cnt)
 
     # for job_name, job in sorted(job_map.items(), key=lambda x: x[1].rerun_cnt, reverse=True):
     #     job.log()
@@ -561,15 +542,3 @@ if __name__ == "__main__":
     #         print(WHITE("\tPull Request ") + pr.repo + " #" + str(pr.number) + CYAN(" rerun cnt: ") + str(pr.rerun_cnt(job_name)))
     #         for run in list(filter(lambda x: x.job_name == job_name, pr.runs)):
     #             run.log(begin="\t\t", show_fail_info=True)
-
-    
-            
-            
-
-
-    # summary(begin_time, end_time, pr_map, commit_hash_map, job_map, run_list, miss_cnt)
-    # print()
-    # job_list(job_map)
-    
-    # print()
-    # pr_list(pr_map)
