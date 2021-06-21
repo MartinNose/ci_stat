@@ -456,7 +456,14 @@ def sec_to_hours(seconds):
 def ilen(iterable):
     return reduce(lambda sum, element: sum + 1, iterable, 0)
 
-def summary(begin_time, end_time, pr_map, commit_hash_map, job_map, run_list, miss_cnt):
+def summary(begin_time, end_time, res):
+    pr_map = res.pr_map
+    commit_hash_map = res.commit_hash_map
+    job_map = res.job_map
+    fail_info_map = res.fail_info_map
+    run_list = res.run_list
+    miss_cnt = res.miss_cnt
+
     success_cnt = ilen(filter(lambda x: x.status == "SUCCESS", run_list))
     fail_cnt = ilen(filter(lambda x: x.status == "FAILURE", run_list))
     abort_cnt = ilen(filter(lambda x: x.status == "ABORTED", run_list))
@@ -502,9 +509,11 @@ def get_runs_raw(begin_time, end_time, job_name):
     begin_time_str = begin_time.strftime('%Y-%m-%d')
     query = "select * from ci_data where time >= '" + begin_time.strftime('%Y-%m-%d %H:%M:%S') + "' and time <= '"+ end_time.strftime('%Y-%m-%d %H:%M:%S') + "'"
     if len(job_name) != 0:
-        for job in job_name:
-            query = query + " and job = '" + job + "'"
-    query
+        query = query + " and ( job = '" + job_name[0] + "'"
+        for job in job_name[1:]:
+            query = query + " or job = '" + job + "'"
+        query = query + ")"
+    print(query)
     cursor.execute(query)
     runs_raw = cursor.fetchall()
     connection.close()
