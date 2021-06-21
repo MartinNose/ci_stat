@@ -45,3 +45,10 @@ class RedirectStdStreams(object):
         self._stdout.flush(); self._stderr.flush()
         sys.stdout = self.old_stdout
         sys.stderr = self.old_stderr
+
+def sec_to_hours(seconds):
+    a=seconds//3600
+    b=(seconds%3600)//60
+    c=(seconds%3600)%60
+    d="{:02d}:{:02d}:{:02d}".format(a, b, c)
+    return d

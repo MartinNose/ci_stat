@@ -9,7 +9,7 @@ from mysql.connector import connect
 from pathlib import Path
 from functools import reduce
 from ci_stat.misc import bcolor, bcolors, WHITE, CYAN, BOLD
-from ci_stat.misc import RedirectStdStreams
+from ci_stat.misc import RedirectStdStreams, sec_to_hours
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
@@ -27,17 +27,14 @@ def get_abort_rate(obj):
     if obj.success_cnt + obj.fail_cnt + obj.abort_cnt == 0:
         return 0.0
     return obj.abort_cnt / (obj.success_cnt + obj.fail_cnt + obj.abort_cnt)
-
 class Run:
     def __init__(self, row_items):
         # Commit information
         self.commit = row_items[5]
 
-        # Job information
         self.job_id = row_items[1]
         self.job_name = row_items[0]
 
-        # Run information
         self.status = row_items[2]
         self.time = row_items[4]
         self.duration = row_items[3] 
@@ -52,20 +49,18 @@ class Run:
 
         self.link = "https://ci.pingcap.net/blue/organizations/jenkins/" + self.job_name + "/detail/" + self.job_name + "/" + str(self.job_id) + "/pipeline/"
         
-        # PR information
         self.repo = row_items[10]
         self.branch = row_items[6]
 
         self.fail_info = []
 
-        self.description = json.loads(row_items[9]) # Not so necessary for now
+        self.description = json.loads(row_items[9])
         if len(self.description) != 19:
             self.pr_number = 0
         else:
             self.pr_number = int(self.description['ghprbPullId'])
             self.author = self.description['ghprbPullAuthorLogin']
             self.pr_link = self.description['ghprbPullLink']
-            
 
     def get_fail_file_path(self):
         dir_path = env["log_dir"] + "fails/" + self.job_name + "/"
@@ -132,9 +127,6 @@ class Run:
             print(bcolors.HEADER + "job_name: " + bcolors.ENDC + self.job_name, end=" ")
         if show_fail_info and self.status == "FAILURE":
             infos = self.get_fail_info()
-            # if len(infos) == 1:
-            #     print(bcolors.FAIL + "fail_cause: " + bcolors.ENDC + infos[0], end=" ")
-            # elif len(infos) > 1:
             if len(infos) == 0:
                 print(bcolors.WARNING + "Error message not found" + bcolors.ENDC, end="")
             else:
@@ -433,13 +425,6 @@ class Result:
         self.fail_cnt = ilen(filter(lambda x: x.status == "FAILURE", run_list))
         self.abort_cnt = ilen(filter(lambda x: x.status == "ABORTED", run_list))
         self.total_cnt = len(run_list)
-
-def sec_to_hours(seconds):
-    a=seconds//3600
-    b=(seconds%3600)//60
-    c=(seconds%3600)%60
-    d="{:02d}:{:02d}:{:02d}".format(a, b, c)
-    return d
     
 def ilen(iterable):
     return reduce(lambda sum, element: sum + 1, iterable, 0)
