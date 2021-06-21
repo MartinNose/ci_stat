@@ -78,15 +78,25 @@ Example usage can be found at `example_bot.py`.
 
 ### `get_result(begin, end, job_name)`
 
-[WIP]
+Return a `Result` object. `job_name` is a list of wanted repos, empty job_name means fetch ci data of all repo.
+
+#### Example
+
+```python
+res = get_result(datetime(2021, 6, 1, 0, 0), datetime.now, [])
+```
+
+
 
 ### `job_list(job_map)`
 
-[WIP]
+List all of job in a map from job_id to `job` object in a descending order on fail_cnt.
 
 ### `pr_list(pr_map)`
 
-[WIP]
+List all of job in a map from pr_id to `pr` object in a descending order on fail_cnt.
+
+
 
 ## Classes
 
