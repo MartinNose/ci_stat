@@ -1,0 +1,92 @@
+{
+    "config": {
+        "wide_screen_mode": true
+    },
+    "elements": [
+      {
+        "tag": "div",
+        "text": {
+          "tag": "lark_md",
+          "content": "**CI Status Hourly Report**"
+        },
+        "fields": [
+          {
+            "is_short": false,
+            "text": {
+              "tag": "lark_md",
+              "content": ""
+            }
+          },
+          {
+            "is_short": true,
+            "text": {
+              "tag": "lark_md",
+              "content": "**# of PRs:** "
+            }
+          },
+          {
+            "is_short": true,
+            "text": {
+              "tag": "lark_md",
+              "content": "**# of Jobs: ** "
+            }
+          },
+          {
+            "is_short": true,
+            "text": {
+              "tag": "lark_md",
+              "content": "**# of Runs:** "
+            }
+          },
+          {
+            "is_short": true,
+            "text": {
+              "tag": "lark_md",
+              "content": "**# of Fails** "
+            }
+          },
+          {
+            "is_short": false,
+            "text": {
+              "tag": "lark_md",
+              "content": ""
+            }
+          },
+          {
+            "is_short": false,
+            "text": {
+              "tag": "lark_md",
+              "content": "**Top Failing PR:**"
+            }
+          },
+          {
+            "is_short": false,
+            "text": {
+              "tag": "lark_md",
+              "content": ""
+            }
+          },
+          {
+            "is_short": false,
+            "text": {
+              "tag": "lark_md",
+              "content": "**Top Failing Job:**"
+            }
+          }
+        ]
+      },
+      {
+        "tag": "action",
+        "actions": [
+          {
+            "tag": "button",
+            "text": {
+              "tag": "plain_text",
+              "content": "View Log [WIP]"
+            },
+            "type": "primary"
+          }
+        ]
+      }
+    ]
+  }
