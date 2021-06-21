@@ -1,6 +1,6 @@
 import sys
 import os
-from ci_stat import Result, env
+from ci_stat.ci_stat import Result, env
 import json
 import hmac
 import hashlib

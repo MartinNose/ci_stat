@@ -10,7 +10,6 @@ from pathlib import Path
 from functools import reduce
 from ci_stat.misc import bcolor, bcolors, WHITE, CYAN, BOLD
 from ci_stat.misc import RedirectStdStreams
-from ci_stat.feishu_bot import res_to_card
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
