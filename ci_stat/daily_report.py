@@ -58,7 +58,7 @@ def main():
     begin_time = end_time - timedelta(days=1)
     res = stat.get_result(begin_time, end_time)
 
-    stat.(res)
+    stat.summary(res)
 
     card = append_rerun(res_to_card(res), res)
     bot_post(card)
