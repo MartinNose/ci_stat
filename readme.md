@@ -74,9 +74,11 @@ Example usage can be found at `example_bot.py`.
 
 `ci_stat.bug_report` provides an API to collect failed runs of job `tide-unit-test-nightly`. `bug_report` first gets all existing issue in repo `PingCAP/TiDB` and failed cases during previous day, then it create new issues for the unreported fail cases.
 
+
+
 ## API of ci_stat
 
-### `get_result(begin, end, job_name)`
+### <kbd>function</kbd> `get_result(begin, end, job_name)`
 
 Return a `Result` object. `job_name` is a list of wanted repos, empty job_name means fetch ci data of all repo.
 
@@ -91,13 +93,13 @@ res = get_result(
 
 
 
-### `job_list(job_map)`
+### <kbd>function</kbd> `job_list(job_map)`
 
 List all of job in a map from job_id to `job` object in a descending order on fail_cnt.
 
 
 
-### `pr_list(pr_map)`
+### <kbd>function</kbd> `pr_list(pr_map)`
 
 List all of job in a map from pr_id to `pr` object in a descending order on fail_cnt.
 
@@ -107,7 +109,7 @@ List all of job in a map from pr_id to `pr` object in a descending order on fail
 
 **claim:** following document only focus on attribute of classes in ci_stat. if not specify, most methods are private and the print/log method is only for your reference, I think it is better to sperate this logging code from the objects because ci_stat is meanly for fetching and storing data. The manipulation process might be done explictly rather than put in a hard-to-customize print/log method.
 
-### Run
+### <kbd>class</kbd> `Run`
 
 Describe a specific run of a job, build up from a record in the table `sync_ci_data`.
 
@@ -126,7 +128,7 @@ And for some special run like runs of `tidb-unit-test-nightly`, many information
 
 - `case`: a list of failed case, could be None.
 
-### Commit
+### <kbd>class</kbd> `Commit`
 
 Describe a commit and keep track of runs related to this commit
 
@@ -138,7 +140,7 @@ Attributes:
 
 - `fail_cnt`, `success_cnt`, `abort_cnt`
 
-### PR
+### <kbd>class</kbd> `PR`
 
 Describe a pull request and keep track of runs related to this PR
 
@@ -158,7 +160,7 @@ Methods:
 
   Return number of rerun on `$(job_name)` caused by this pr
 
-### Job
+### <kbd>class</kbd> `Job`
 
 Describe a job and keep track of prs related to this job
 
@@ -168,7 +170,7 @@ Attributes:
 - `prs`: a map from pr_number to a pr object * Might be a bug?
 - `local_prs`: a map from pr_number to a pr object that such pr objects contains only runs of this job, making it easier for logging and statisticizing.
 
-### Fail_Info
+### <kbd>class</kbd> `Fail_Info`
 
 Describte a fail case and keep track of related runs
 
@@ -177,7 +179,7 @@ Attributes:
 - `info`: fail case name
 - `run_list`: failed run objects containing this fail info
 
-### Result
+### <kbd>class</kbd> `Result`
 
 Describe results of a fetch and analysis process. 
 
