@@ -269,10 +269,10 @@ class PR:
         fail.update(run)
     
 class Job:
-    def __init__(self, job: Run):
-        self.job_name = job.job_name
-        self.repo = job.repo
-        self.branch = job.branch
+    def __init__(self, run: Run):
+        self.job_name = run.job_name
+        self.repo = run.repo
+        self.branch = run.branch
         self.prs = {}
 
         self.local_prs = {}
@@ -283,21 +283,21 @@ class Job:
         self.total_cnt = 0
         self.rerun_cnt = 0
     
-    def update(self, job: Run, pr: PR):
+    def update(self, run: Run, pr: PR):
         if not pr.number in self.prs:
             self.prs[pr.number] = pr
         
         if not pr.number in self.local_prs:
-            self.local_prs[pr.number] = PR(job)
+            self.local_prs[pr.number] = PR(run)
         else:
             self.rerun_cnt += 1
-        self.local_prs[pr.number].update(job)
+        self.local_prs[pr.number].update(run)
         
-        if job.status == "SUCCESS":
+        if run.status == "SUCCESS":
             self.success_cnt += 1
-        elif job.status == "ABORTED":
+        elif run.status == "ABORTED":
             self.abort_cnt += 1
-        elif job.status == "FAILURE":
+        elif run.status == "FAILURE":
             self.fail_cnt += 1
 
         self.total_cnt += 1
